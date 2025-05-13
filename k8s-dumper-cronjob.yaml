@@ -1,0 +1,24 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: k8s-dumper
+  namespace: default
+spec:
+  schedule: "0 1 * * *"
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      template:
+        spec:
+          serviceAccountName: k8s-dumper
+          restartPolicy: Never
+          containers:
+            - name: dumper
+              image: registry.example.com/tools/my-k8s-dumper:latest
+              imagePullPolicy: Always
+              volumeMounts:
+                - name: dump
+                  mountPath: /app/k8s-dump
+          volumes:
+            - name: dump
+              emptyDir: {}
